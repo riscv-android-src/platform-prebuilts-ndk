@@ -39,16 +39,31 @@ def main():
     os.chdir(os.path.join(THIS_DIR, 'current/platforms'))
 
     first_api = 3
+    first_multiarch_api = 9
     first_lp64_api = 21
     latest_api = 23
+
+    for api in xrange(first_api, first_multiarch_api):
+        if not os.path.exists(api_str(api)):
+            continue
+
+        for arch in ('arch-x86', 'arch-mips'):
+            src = os.path.join('..', api_str(first_multiarch_api), arch)
+            dst = os.path.join(api_str(api), arch)
+            if os.path.islink(dst):
+                os.unlink(dst)
+            os.symlink(src, dst)
 
     for api in xrange(first_api, first_lp64_api):
         if not os.path.exists(api_str(api)):
             continue
 
         for arch in ('arch-arm64', 'arch-mips64', 'arch-x86_64'):
-            os.symlink(os.path.join('..', api_str(first_lp64_api), arch),
-                       os.path.join(api_str(api), arch))
+            src = os.path.join('..', api_str(first_lp64_api), arch)
+            dst = os.path.join(api_str(api), arch)
+            if os.path.islink(dst):
+                os.unlink(dst)
+            os.symlink(src, dst)
 
     symlink_gaps(first_api, latest_api)
 
