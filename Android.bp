@@ -554,193 +554,961 @@ cc_defaults {
 ndk_prebuilt_library {
     name: "ndk_libc.3",
     defaults: ["ndk_3_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.3",
+    defaults: ["ndk_3_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.3",
+    defaults: ["ndk_3_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.3",
     defaults: ["ndk_3_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.3",
+    defaults: ["ndk_3_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.3",
+    defaults: ["ndk_3_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.4",
+    defaults: ["ndk_4_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.4",
     defaults: ["ndk_4_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.4",
+    defaults: ["ndk_4_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.4",
+    defaults: ["ndk_4_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.4",
     defaults: ["ndk_4_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.4",
+    defaults: ["ndk_4_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.4",
+    defaults: ["ndk_4_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.5",
+    defaults: ["ndk_5_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.5",
+    defaults: ["ndk_5_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.5",
     defaults: ["ndk_5_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.5",
+    defaults: ["ndk_5_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.5",
+    defaults: ["ndk_5_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.5",
     defaults: ["ndk_5_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.5",
+    defaults: ["ndk_5_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.5",
+    defaults: ["ndk_5_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.8",
+    defaults: ["ndk_8_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.8",
+    defaults: ["ndk_8_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.8",
     defaults: ["ndk_8_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.8",
+    defaults: ["ndk_8_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.8",
+    defaults: ["ndk_8_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.8",
+    defaults: ["ndk_8_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.8",
     defaults: ["ndk_8_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.8",
+    defaults: ["ndk_8_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.8",
+    defaults: ["ndk_8_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.9",
+    defaults: ["ndk_9_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.9",
     defaults: ["ndk_9_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.9",
+    defaults: ["ndk_9_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.9",
     defaults: ["ndk_9_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.9",
+    defaults: ["ndk_9_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.12",
+    defaults: ["ndk_12_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.12",
     defaults: ["ndk_12_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.12",
+    defaults: ["ndk_12_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.12",
     defaults: ["ndk_12_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.12",
+    defaults: ["ndk_12_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.13",
+    defaults: ["ndk_13_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.13",
     defaults: ["ndk_13_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.13",
+    defaults: ["ndk_13_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.13",
     defaults: ["ndk_13_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.13",
+    defaults: ["ndk_13_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.14",
+    defaults: ["ndk_14_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.14",
     defaults: ["ndk_14_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.14",
+    defaults: ["ndk_14_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.14",
     defaults: ["ndk_14_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.14",
+    defaults: ["ndk_14_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.15",
+    defaults: ["ndk_15_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.15",
     defaults: ["ndk_15_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.15",
+    defaults: ["ndk_15_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.15",
     defaults: ["ndk_15_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.15",
+    defaults: ["ndk_15_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.16",
+    defaults: ["ndk_16_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.16",
     defaults: ["ndk_16_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.16",
+    defaults: ["ndk_16_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.16",
     defaults: ["ndk_16_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.16",
+    defaults: ["ndk_16_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.17",
+    defaults: ["ndk_17_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.17",
     defaults: ["ndk_17_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.17",
+    defaults: ["ndk_17_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.17",
     defaults: ["ndk_17_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.17",
+    defaults: ["ndk_17_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv3.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.18",
+    defaults: ["ndk_18_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.18",
     defaults: ["ndk_18_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.18",
+    defaults: ["ndk_18_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.18",
     defaults: ["ndk_18_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.18",
+    defaults: ["ndk_18_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv3.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.19",
+    defaults: ["ndk_19_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.19",
     defaults: ["ndk_19_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.19",
+    defaults: ["ndk_19_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.19",
     defaults: ["ndk_19_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.19",
+    defaults: ["ndk_19_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv3.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.21",
+    defaults: ["ndk_21_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.21",
     defaults: ["ndk_21_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.21",
+    defaults: ["ndk_21_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.21",
     defaults: ["ndk_21_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libmediandk.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.21",
+    defaults: ["ndk_21_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv3.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.23",
+    defaults: ["ndk_23_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.23",
     defaults: ["ndk_23_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.23",
+    defaults: ["ndk_23_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.23",
     defaults: ["ndk_23_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libmediandk.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.23",
+    defaults: ["ndk_23_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libEGL.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv1_CM.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv2.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libGLESv3.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenMAXAL.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libOpenSLES.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libandroid.24",
+    defaults: ["ndk_24_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libc.24",
     defaults: ["ndk_24_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libdl.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libjnigraphics.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_liblog.24",
+    defaults: ["ndk_24_defaults"],
 }
 
 ndk_prebuilt_library {
     name: "ndk_libm.24",
     defaults: ["ndk_24_defaults"],
-    },
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libmediandk.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libstdc++.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libvulkan.24",
+    defaults: ["ndk_24_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "ndk_libz.24",
+    defaults: ["ndk_24_defaults"],
 }
 
 ndk_prebuilt_object {
