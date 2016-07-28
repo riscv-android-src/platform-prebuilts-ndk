@@ -80,7 +80,7 @@ def get_prebuilts(names):
 
 def gen_lib_prebuilt(prebuilt, name, version):
     return ('ndk_prebuilt_library {{\n'
-            '    name: "ndk_{name}.{version}",\n'
+            '    name: "{name}.ndk.{version}",\n'
             '    defaults: ["ndk_{version}_defaults"],\n'
             '}}'.format(name=name, version=version))
 
@@ -97,6 +97,9 @@ def gen_prebuilts(fn, names):
     for prebuilt in get_prebuilts(names):
         name = os.path.splitext(os.path.basename(prebuilt))[0]
         version = sdk_version_from_path(prebuilt)
+        if version < 9:
+            # We don't support anything before Gingerbread any more.
+            continue
         prebuilts.append(fn(prebuilt, name, version))
     return prebuilts
 
