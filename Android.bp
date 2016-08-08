@@ -2,156 +2,6 @@
 // DO NOT EDIT
 
 cc_defaults {
-    name: "ndk_3_defaults",
-    sdk_version: "3",
-    arch: {
-        arm: {
-            export_include_dirs: ["current/platforms/android-3/arch-arm/usr/include"],
-        },
-        arm64: {
-            export_include_dirs: ["current/platforms/android-3/arch-arm64/usr/include"],
-        },
-        mips: {
-            export_include_dirs: ["current/platforms/android-3/arch-mips/usr/include"],
-        },
-        mips64: {
-            export_include_dirs: ["current/platforms/android-3/arch-mips64/usr/include"],
-        },
-        x86: {
-            export_include_dirs: ["current/platforms/android-3/arch-x86/usr/include"],
-        },
-        x86_64: {
-            export_include_dirs: ["current/platforms/android-3/arch-x86_64/usr/include"],
-        },
-    },
-}
-
-cc_defaults {
-    name: "ndk_4_defaults",
-    sdk_version: "4",
-    arch: {
-        arm: {
-            export_include_dirs: ["current/platforms/android-4/arch-arm/usr/include"],
-        },
-        arm64: {
-            export_include_dirs: ["current/platforms/android-4/arch-arm64/usr/include"],
-        },
-        mips: {
-            export_include_dirs: ["current/platforms/android-4/arch-mips/usr/include"],
-        },
-        mips64: {
-            export_include_dirs: ["current/platforms/android-4/arch-mips64/usr/include"],
-        },
-        x86: {
-            export_include_dirs: ["current/platforms/android-4/arch-x86/usr/include"],
-        },
-        x86_64: {
-            export_include_dirs: ["current/platforms/android-4/arch-x86_64/usr/include"],
-        },
-    },
-}
-
-cc_defaults {
-    name: "ndk_5_defaults",
-    sdk_version: "5",
-    arch: {
-        arm: {
-            export_include_dirs: ["current/platforms/android-5/arch-arm/usr/include"],
-        },
-        arm64: {
-            export_include_dirs: ["current/platforms/android-5/arch-arm64/usr/include"],
-        },
-        mips: {
-            export_include_dirs: ["current/platforms/android-5/arch-mips/usr/include"],
-        },
-        mips64: {
-            export_include_dirs: ["current/platforms/android-5/arch-mips64/usr/include"],
-        },
-        x86: {
-            export_include_dirs: ["current/platforms/android-5/arch-x86/usr/include"],
-        },
-        x86_64: {
-            export_include_dirs: ["current/platforms/android-5/arch-x86_64/usr/include"],
-        },
-    },
-}
-
-cc_defaults {
-    name: "ndk_6_defaults",
-    sdk_version: "6",
-    arch: {
-        arm: {
-            export_include_dirs: ["current/platforms/android-6/arch-arm/usr/include"],
-        },
-        arm64: {
-            export_include_dirs: ["current/platforms/android-6/arch-arm64/usr/include"],
-        },
-        mips: {
-            export_include_dirs: ["current/platforms/android-6/arch-mips/usr/include"],
-        },
-        mips64: {
-            export_include_dirs: ["current/platforms/android-6/arch-mips64/usr/include"],
-        },
-        x86: {
-            export_include_dirs: ["current/platforms/android-6/arch-x86/usr/include"],
-        },
-        x86_64: {
-            export_include_dirs: ["current/platforms/android-6/arch-x86_64/usr/include"],
-        },
-    },
-}
-
-cc_defaults {
-    name: "ndk_7_defaults",
-    sdk_version: "7",
-    arch: {
-        arm: {
-            export_include_dirs: ["current/platforms/android-7/arch-arm/usr/include"],
-        },
-        arm64: {
-            export_include_dirs: ["current/platforms/android-7/arch-arm64/usr/include"],
-        },
-        mips: {
-            export_include_dirs: ["current/platforms/android-7/arch-mips/usr/include"],
-        },
-        mips64: {
-            export_include_dirs: ["current/platforms/android-7/arch-mips64/usr/include"],
-        },
-        x86: {
-            export_include_dirs: ["current/platforms/android-7/arch-x86/usr/include"],
-        },
-        x86_64: {
-            export_include_dirs: ["current/platforms/android-7/arch-x86_64/usr/include"],
-        },
-    },
-}
-
-cc_defaults {
-    name: "ndk_8_defaults",
-    sdk_version: "8",
-    arch: {
-        arm: {
-            export_include_dirs: ["current/platforms/android-8/arch-arm/usr/include"],
-        },
-        arm64: {
-            export_include_dirs: ["current/platforms/android-8/arch-arm64/usr/include"],
-        },
-        mips: {
-            export_include_dirs: ["current/platforms/android-8/arch-mips/usr/include"],
-        },
-        mips64: {
-            export_include_dirs: ["current/platforms/android-8/arch-mips64/usr/include"],
-        },
-        x86: {
-            export_include_dirs: ["current/platforms/android-8/arch-x86/usr/include"],
-        },
-        x86_64: {
-            export_include_dirs: ["current/platforms/android-8/arch-x86_64/usr/include"],
-        },
-    },
-}
-
-cc_defaults {
     name: "ndk_9_defaults",
     sdk_version: "9",
     arch: {
@@ -1207,6 +1057,81 @@ ndk_prebuilt_library {
 }
 
 ndk_prebuilt_library {
+    name: "libEGL.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libGLESv1_CM.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libGLESv2.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libGLESv3.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libOpenMAXAL.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libOpenSLES.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libandroid.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libc.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libdl.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libjnigraphics.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "liblog.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libm.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libmediandk.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libstdc++.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
+    name: "libz.ndk.22",
+    defaults: ["ndk_22_defaults"],
+}
+
+ndk_prebuilt_library {
     name: "libEGL.ndk.23",
     defaults: ["ndk_23_defaults"],
 }
@@ -1609,6 +1534,31 @@ ndk_prebuilt_object {
 ndk_prebuilt_object {
     name: "ndk_crtend_so.21",
     sdk_version: "21",
+}
+
+ndk_prebuilt_object {
+    name: "ndk_crtbegin_dynamic.22",
+    sdk_version: "22",
+}
+
+ndk_prebuilt_object {
+    name: "ndk_crtbegin_so.22",
+    sdk_version: "22",
+}
+
+ndk_prebuilt_object {
+    name: "ndk_crtbegin_static.22",
+    sdk_version: "22",
+}
+
+ndk_prebuilt_object {
+    name: "ndk_crtend_android.22",
+    sdk_version: "22",
+}
+
+ndk_prebuilt_object {
+    name: "ndk_crtend_so.22",
+    sdk_version: "22",
 }
 
 ndk_prebuilt_object {
