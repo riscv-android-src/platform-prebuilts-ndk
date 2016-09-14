@@ -136,7 +136,7 @@ def main():
         f.write('\n')
         f.write('\n\n'.join(blueprints))
         f.write('\n\n')
-        f.write('build = ["stl.bp"]\n')
+        f.write('build = ["bionic.bp", "stl.bp"]\n')
 
 
 if __name__ == '__main__':
