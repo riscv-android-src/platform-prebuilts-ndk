@@ -1,0 +1,7 @@
+// Update with bionic/tools/update_headers.sh.
+ndk_headers {
+    name: "libc_unified_headers",
+    from: "headers",
+    to: "",
+    srcs: ["headers/**/*.h"],
+}
