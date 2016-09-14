@@ -1611,4 +1611,4 @@ ndk_prebuilt_object {
     sdk_version: "24",
 }
 
-build = ["stl.bp"]
+build = ["bionic.bp", "stl.bp"]
