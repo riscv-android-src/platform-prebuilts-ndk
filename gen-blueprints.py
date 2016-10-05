@@ -106,23 +106,6 @@ def gen_prebuilts(fn, names):
 
 def main():
     blueprints = gen_defaults()
-    blueprints.extend(gen_prebuilts(gen_lib_prebuilt, (
-        'libandroid.so',
-        'libc.so',
-        'libdl.so',
-        'libEGL.so',
-        'libGLESv1_CM.so',
-        'libGLESv2.so',
-        'libGLESv3.so',
-        'libjnigraphics.so',
-        'liblog.so',
-        'libmediandk.so',
-        'libm.so',
-        'libOpenMAXAL.so',
-        'libOpenSLES.so',
-        'libstdc++.so',
-        'libvulkan.so',
-        'libz.so')))
     blueprints.extend(gen_prebuilts(gen_crt_prebuilt, (
         'crtbegin_so.o',
         'crtend_so.o',
