@@ -4,4 +4,5 @@ ndk_headers {
     from: "headers",
     to: "",
     srcs: ["headers/**/*.h"],
+    license: "NOTICE",
 }
