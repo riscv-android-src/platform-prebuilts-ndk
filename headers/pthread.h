@@ -224,7 +224,7 @@ int pthread_spin_unlock(pthread_spinlock_t* _Nonnull) __INTRODUCED_IN(24);
 #endif /* __ANDROID_API__ >= 24 */
 
 
-pthread_t pthread_self(void) __pure2;
+pthread_t pthread_self(void) __attribute_const__;
 
 #if defined(__USE_GNU)
 

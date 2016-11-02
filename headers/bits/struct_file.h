@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2016 The Android Open Source Project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,29 +25,22 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef _ERRNO_H
-#define _ERRNO_H
+
+#ifndef BITS_FILE_H
+#define BITS_FILE_H
 
 #include <sys/cdefs.h>
-#include <linux/errno.h>
 
 __BEGIN_DECLS
 
-/* on Linux, ENOTSUP and EOPNOTSUPP are defined as the same error code
- * even if 1000.3 states that they should be different
- */
-#ifndef  ENOTSUP
-#define  ENOTSUP  EOPNOTSUPP
+struct __sFILE {
+#if defined(__LP64__)
+  char __private[152];
+#else
+  char __private[84];
 #endif
-
-/* internal function returning the address of the thread-specific errno */
-volatile int* __errno(void) __attribute_const__;
-
-/* a macro expanding to the errno l-value */
-#define  errno   (*__errno())
+} __attribute__((aligned(sizeof(void*))));
 
 __END_DECLS
 
-#include <android/legacy_errno_inlines.h>
-
-#endif /* _ERRNO_H */
+#endif /* BITS_FILE_H */
