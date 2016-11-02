@@ -256,8 +256,8 @@ typedef struct {
 __BEGIN_DECLS
 
 #if __ANDROID_API__ >= 19
-intmax_t imaxabs(intmax_t) __pure2 __INTRODUCED_IN(19);
-imaxdiv_t imaxdiv(intmax_t, intmax_t) __pure2 __INTRODUCED_IN(19);
+intmax_t imaxabs(intmax_t) __attribute_const__ __INTRODUCED_IN(19);
+imaxdiv_t imaxdiv(intmax_t, intmax_t) __attribute_const__ __INTRODUCED_IN(19);
 #endif /* __ANDROID_API__ >= 19 */
 
 intmax_t	strtoimax(const char *, char **, int);
