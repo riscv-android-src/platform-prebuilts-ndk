@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2016 The Android Open Source Project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,29 +25,25 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef _ERRNO_H
-#define _ERRNO_H
+
+#ifndef _ANDROID_LEGACY_SYS_WAIT_INLINES_H_
+#define _ANDROID_LEGACY_SYS_WAIT_INLINES_H_
 
 #include <sys/cdefs.h>
-#include <linux/errno.h>
+#include <sys/syscall.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#if __ANDROID_API__ < 18
 
 __BEGIN_DECLS
 
-/* on Linux, ENOTSUP and EOPNOTSUPP are defined as the same error code
- * even if 1000.3 states that they should be different
- */
-#ifndef  ENOTSUP
-#define  ENOTSUP  EOPNOTSUPP
-#endif
-
-/* internal function returning the address of the thread-specific errno */
-volatile int* __errno(void) __attribute_const__;
-
-/* a macro expanding to the errno l-value */
-#define  errno   (*__errno())
+static __inline pid_t wait4(pid_t pid, int* status, int options, struct rusage* rusage) {
+  return __BIONIC_CAST(static_cast, pid_t, syscall(__NR_wait4, pid, status, options, rusage));
+}
 
 __END_DECLS
 
-#include <android/legacy_errno_inlines.h>
+#endif /* __ANDROID_API__ < 18 */
 
-#endif /* _ERRNO_H */
+#endif /* _ANDROID_LEGACY_SYS_WAIT_INLINES_H_ */

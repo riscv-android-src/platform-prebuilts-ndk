@@ -102,16 +102,18 @@ double strtod(const char*, char**);
 
 #if __ANDROID_API__ >= 21
 long double strtold(const char*, char**) __INTRODUCED_IN(21);
-
-long double strtold_l(const char*, char**, locale_t) __INTRODUCED_IN(21);
-long long strtoll_l(const char*, char**, int, locale_t) __INTRODUCED_IN(21);
-unsigned long long strtoull_l(const char*, char**, int, locale_t) __INTRODUCED_IN(21);
 #endif /* __ANDROID_API__ >= 21 */
 
 
-int atoi(const char*) __purefunc;
-long atol(const char*) __purefunc;
-long long atoll(const char*) __purefunc;
+
+#if 0
+unsigned long strtoul_l(const char*, char**, int, locale_t) __INTRODUCED_IN_FUTURE;
+#endif /* 0 */
+
+
+int atoi(const char*) __attribute_pure__;
+long atol(const char*) __attribute_pure__;
+long long atoll(const char*) __attribute_pure__;
 
 char* realpath(const char* path, char* resolved);
 int system(const char* string);
@@ -175,21 +177,21 @@ typedef struct {
     int  rem;
 } div_t;
 
-div_t div(int, int) __pure2;
+div_t div(int, int) __attribute_const__;
 
 typedef struct {
     long int  quot;
     long int  rem;
 } ldiv_t;
 
-ldiv_t ldiv(long, long) __pure2;
+ldiv_t ldiv(long, long) __attribute_const__;
 
 typedef struct {
     long long int  quot;
     long long int  rem;
 } lldiv_t;
 
-lldiv_t lldiv(long long, long long) __pure2;
+lldiv_t lldiv(long long, long long) __attribute_const__;
 
 /* BSD compatibility. */
 
@@ -240,17 +242,29 @@ char* realpath(const char* path, char* resolved) {
 
 #if __ANDROID_API__ >= 21
 float strtof(const char*, char**) __INTRODUCED_IN(21);
-double atof(const char*) __INTRODUCED_IN(21);
-int abs(int) __pure2 __INTRODUCED_IN(21);
-long labs(long) __pure2 __INTRODUCED_IN(21);
-long long llabs(long long) __pure2 __INTRODUCED_IN(21);
+double atof(const char*) __attribute_pure__ __INTRODUCED_IN(21);
+int abs(int) __attribute_const__ __INTRODUCED_IN(21);
+long labs(long) __attribute_const__ __INTRODUCED_IN(21);
+long long llabs(long long) __attribute_const__ __INTRODUCED_IN(21);
 int rand(void) __INTRODUCED_IN(21);
 void srand(unsigned int) __INTRODUCED_IN(21);
 long random(void) __INTRODUCED_IN(21);
 void srandom(unsigned int) __INTRODUCED_IN(21);
 int grantpt(int) __INTRODUCED_IN(21);
+
+long long strtoll_l(const char*, char**, int, locale_t) __INTRODUCED_IN(21);
+unsigned long long strtoull_l(const char*, char**, int, locale_t) __INTRODUCED_IN(21);
+long double strtold_l(const char*, char**, locale_t) __INTRODUCED_IN(21);
 #else
 // Implemented as static inlines before 21.
+#endif
+
+#if __ANDROID_API__ >= __ANDROID_API_FUTURE__
+double strtod_l(const char*, char**, locale_t) __INTRODUCED_IN_FUTURE;
+float strtof_l(const char*, char**, locale_t) __INTRODUCED_IN_FUTURE;
+long strtol_l(const char*, char**, int, locale_t) __INTRODUCED_IN_FUTURE;
+#else
+// Implemented as static inlines.
 #endif
 
 __END_DECLS
