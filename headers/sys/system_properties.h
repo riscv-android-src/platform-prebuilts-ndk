@@ -30,6 +30,7 @@
 #define _INCLUDE_SYS_SYSTEM_PROPERTIES_H
 
 #include <sys/cdefs.h>
+#include <stddef.h>
 
 __BEGIN_DECLS
 
@@ -68,13 +69,21 @@ const prop_info *__system_property_find(const char *name);
 /* Read the value of a system property.  Returns the length
 ** of the value.  Copies the value and \0 terminator into
 ** the provided value pointer.  Total length (including
-** terminator) will be no greater that PROP_VALUE_MAX.
+** terminator) will be no greater that PROP_VALUE_MAX for
+** __system_property_read.
 **
 ** If name is nonzero, up to PROP_NAME_MAX bytes will be
 ** copied into the provided name pointer.  The name will
 ** be \0 terminated.
 */
 int __system_property_read(const prop_info *pi, char *name, char *value);
+
+#if __ANDROID_API__ >= __ANDROID_API_FUTURE__
+void __system_property_read_callback(const prop_info *pi,
+                                     void (*)(void* cookie, const char *name, const char *value),
+                                     void* cookie) __INTRODUCED_IN_FUTURE;
+#endif /* __ANDROID_API__ >= __ANDROID_API_FUTURE__ */
+
 
 /* Return a prop_info for the nth system property, or NULL if 
 ** there is no nth property.  Use __system_property_read() to
@@ -85,7 +94,8 @@ int __system_property_read(const prop_info *pi, char *name, char *value);
 ** is inefficient and order of results may change from call
 ** to call.
 */ 
-const prop_info *__system_property_find_nth(unsigned n);
+const prop_info *__system_property_find_nth(unsigned n)
+  __REMOVED_IN(26);
 
 /* Pass a prop_info for each system property to the provided
 ** callback.  Use __system_property_read() to read the value
