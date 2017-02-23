@@ -30,6 +30,8 @@
 #define _INCLUDE_SYS__SYSTEM_PROPERTIES_H
 
 #include <sys/cdefs.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #ifndef _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #error you should #include <sys/system_properties.h> instead
@@ -91,7 +93,7 @@ int __system_property_area_init();
 **
 ** Returns the serial number on success, -1 on error.
 */
-unsigned int __system_property_area_serial();
+uint32_t __system_property_area_serial();
 
 /* Add a new system property.  Can only be done by a single
 ** process that has write access to the property area, and
@@ -118,12 +120,26 @@ int __system_property_update(prop_info *pi, const char *value, unsigned int len)
 **
 ** Returns the serial number on success, -1 on error.
 */
-unsigned int __system_property_serial(const prop_info *pi);
+uint32_t __system_property_serial(const prop_info* pi);
 
-/* Wait for any system property to be updated.  Caller must pass
-** in 0 the first time, and the previous return value on each
-** successive call. */
-unsigned int __system_property_wait_any(unsigned int serial);
+/*
+ * Waits for the specific system property identified by `pi` to be updated
+ * past `old_serial`. Waits no longer than `relative_timeout`, or forever
+ * if `relaive_timeout` is null.
+ *
+ * If `pi` is null, waits for the global serial number instead.
+ *
+ * If you don't know the current serial, use 0.
+ *
+ * Returns true and updates `*new_serial_ptr` on success, or false if the call
+ * timed out.
+ */
+struct timespec;
+bool __system_property_wait(const prop_info* pi,
+                            uint32_t old_serial,
+                            uint32_t* new_serial_ptr,
+                            const struct timespec* relative_timeout)
+    __INTRODUCED_IN_FUTURE;
 
 /* Initialize the system properties area in read only mode.
  * Should be done by all processes that need to read system
@@ -132,6 +148,9 @@ unsigned int __system_property_wait_any(unsigned int serial);
  * Returns 0 on success, -1 otherwise.
  */
 int __system_properties_init();
+
+/* Deprecated: use __system_property_wait instead. */
+uint32_t __system_property_wait_any(uint32_t old_serial);
 
 __END_DECLS
 
