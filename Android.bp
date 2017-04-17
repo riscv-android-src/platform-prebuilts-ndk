@@ -326,4 +326,4 @@ ndk_prebuilt_object {
     sdk_version: "24",
 }
 
-build = ["stl.bp"]
+build = ["cpufeatures.bp", "stl.bp"]
