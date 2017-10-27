@@ -18,6 +18,7 @@ cc_library_static {
     name: "cpufeatures",
     vendor_available: true,
     srcs: ["current/sources/android/cpufeatures/cpu-features.c"],
+    cflags: ["-Wall", "-Werror"],
     sdk_version: "minimum",
     export_include_dirs: ["current/sources/android/cpufeatures"],
 }
