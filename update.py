@@ -91,7 +91,6 @@ def make_symlinks(install_dir):
 
     first_api = 9
     first_lp64_api = 21
-    latest_api = 23
 
     for api in xrange(first_api, first_lp64_api):
         if not os.path.exists(api_str(api)):
