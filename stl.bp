@@ -1,15 +1,3 @@
-stlport_includes = ["current/sources/cxx-stl/stlport/stlport"]
-
-ndk_prebuilt_static_stl {
-    name: "ndk_libstlport_static",
-    export_include_dirs: stlport_includes,
-}
-
-ndk_prebuilt_shared_stl {
-    name: "ndk_libstlport_shared",
-    export_include_dirs: stlport_includes,
-}
-
 libcxx_includes =  [
     "current/sources/cxx-stl/llvm-libc++/include",
     "current/sources/cxx-stl/llvm-libc++abi/include",
