@@ -592,7 +592,7 @@ int ns_samename(const char* __lhs, const char* __rhs);
 /* The duplication here is intentional to avoid declaring different symbols with the same
  * declaration. */
 
-#if (!defined(__LP64__)) || (defined(__LP64__) && __ANDROID_API__ >= 23)
+#if (!defined(__LP64__)) || (defined(__aarch64__) && __ANDROID_API__ >= 23) || (defined(__mips__) && defined(__LP64__) && __ANDROID_API__ >= 23) || (defined(__riscv) && defined(__LP64__)) || (defined(__x86_64__) && __ANDROID_API__ >= 23)
 int ns_msg_getflag(ns_msg __handle, int __flag) __INTRODUCED_IN_64(23);
 uint16_t ns_get16(const u_char* __src) __INTRODUCED_IN_64(23);
 uint32_t ns_get32(const u_char* __src) __INTRODUCED_IN_64(23);
@@ -620,7 +620,7 @@ void ns_name_rollback(const u_char* __src, const u_char** __dn_ptrs, const u_cha
 
 int ns_makecanon(const char* __src, char* __dst, size_t __dst_size) __INTRODUCED_IN_64(23);
 int ns_samename(const char* __lhs, const char* __rhs) __INTRODUCED_IN_64(23);
-#endif /* (!defined(__LP64__)) || (defined(__LP64__) && __ANDROID_API__ >= 23) */
+#endif /* (!defined(__LP64__)) || (defined(__aarch64__) && __ANDROID_API__ >= 23) || (defined(__mips__) && defined(__LP64__) && __ANDROID_API__ >= 23) || (defined(__riscv) && defined(__LP64__)) || (defined(__x86_64__) && __ANDROID_API__ >= 23) */
 
 #endif /* !defined(__LP64__) */
 
