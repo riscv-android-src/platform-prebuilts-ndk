@@ -71,11 +71,11 @@ def remove_old_release(install_dir):
 def install_new_release(branch, build, install_dir):
     os.makedirs(install_dir)
 
-    artifact_pattern = 'android-ndk-*.tar.bz2'
+    artifact_pattern = 'android-ndk-0-linux-x86_64.tar.bz2'
     logger().info('Fetching %s from %s (artifacts matching %s)', build, branch,
                   artifact_pattern)
-    fetch_artifact(branch, build, artifact_pattern)
-    artifacts = glob.glob('android-ndk-*.tar.bz2')
+    #fetch_artifact(branch, build, artifact_pattern)
+    artifacts = glob.glob('android-ndk-0-linux-x86_64.tar.bz2')
     try:
         assert len(artifacts) == 1
         artifact = artifacts[0]
