@@ -26,7 +26,8 @@
  * SUCH DAMAGE.
  */
 
-#pragma once
+#ifndef NDK_ANDROID_SUPPORT_STDLIB_H
+#define NDK_ANDROID_SUPPORT_STDLIB_H
 
 #include_next <stdlib.h>
 
@@ -46,3 +47,5 @@ void quick_exit(int) __noreturn;
 #endif
 
 __END_DECLS
+
+#endif

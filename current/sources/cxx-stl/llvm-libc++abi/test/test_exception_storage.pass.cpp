@@ -1,8 +1,9 @@
 //===-------------------- test_exception_storage.cpp ----------------------===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is dual licensed under the MIT and the University of Illinois Open
+// Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 
@@ -12,7 +13,7 @@
 #include <__threading_support>
 #include <unistd.h>
 
-#include "../src/cxa_exception.h"
+#include "../src/cxa_exception.hpp"
 
 typedef __cxxabiv1::__cxa_eh_globals globals_t ;
 

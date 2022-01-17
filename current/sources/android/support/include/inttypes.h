@@ -26,7 +26,8 @@
  * SUCH DAMAGE.
  */
 
-#pragma once
+#ifndef NDK_ANDROID_SUPPORT_INTTYPES_H
+#define NDK_ANDROID_SUPPORT_INTTYPES_H
 
 #include_next <inttypes.h>
 
@@ -43,3 +44,5 @@ uintmax_t wcstoumax(const wchar_t* __restrict, wchar_t** __restrict, int);
 #endif
 
 __END_DECLS
+
+#endif

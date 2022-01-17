@@ -22,18 +22,12 @@ libcxx_export_includes := $(libcxx_includes)
 libcxx_sources := \
     algorithm.cpp \
     any.cpp \
-    atomic.cpp \
-    barrier.cpp \
     bind.cpp \
     charconv.cpp \
     chrono.cpp \
     condition_variable.cpp \
-    condition_variable_destructor.cpp \
     debug.cpp \
     exception.cpp \
-    filesystem/directory_iterator.cpp \
-    filesystem/int128_builtins.cpp \
-    filesystem/operations.cpp \
     functional.cpp \
     future.cpp \
     hash.cpp \
@@ -42,7 +36,6 @@ libcxx_sources := \
     locale.cpp \
     memory.cpp \
     mutex.cpp \
-    mutex_destructor.cpp \
     new.cpp \
     optional.cpp \
     random.cpp \
@@ -79,9 +72,10 @@ libcxx_cxxflags := \
 
 libcxx_ldflags :=
 libcxx_export_ldflags :=
-
-ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-    libcxx_cxxflags += -mbranch-protection=standard
+# Need to make sure the unwinder is always linked with hidden visibility.
+ifneq (,$(filter armeabi%,$(TARGET_ARCH_ABI)))
+    libcxx_ldflags += -Wl,--exclude-libs,libunwind.a
+    libcxx_export_ldflags += -Wl,--exclude-libs,libunwind.a
 endif
 
 ifneq ($(LIBCXX_FORCE_REBUILD),true)
@@ -92,9 +86,6 @@ libcxxabi_c_includes := $(LOCAL_PATH)/../llvm-libc++abi/include
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := c++_static
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/../../../../NOTICE
 LOCAL_SRC_FILES := libs/$(TARGET_ARCH_ABI)/lib$(LOCAL_MODULE)$(TARGET_LIB_EXTENSION)
 LOCAL_EXPORT_C_INCLUDES := $(libcxx_export_includes)
 LOCAL_STATIC_LIBRARIES := libc++abi
@@ -110,14 +101,14 @@ ifeq ($(NDK_PLATFORM_NEEDS_ANDROID_SUPPORT),true)
     LOCAL_EXPORT_STATIC_LIBRARIES += libandroid_support
 endif
 
-LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+# We use the LLVM unwinder for 32-bit ARM.
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+endif
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := c++_shared
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/../../../../NOTICE
 LOCAL_SRC_FILES := libs/$(TARGET_ARCH_ABI)/lib$(LOCAL_MODULE)$(TARGET_SONAME_EXTENSION)
 LOCAL_EXPORT_C_INCLUDES := \
     $(libcxx_export_includes) \
@@ -134,8 +125,21 @@ ifeq ($(NDK_PLATFORM_NEEDS_ANDROID_SUPPORT),true)
     LOCAL_EXPORT_STATIC_LIBRARIES := libandroid_support
 endif
 
-LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+# We use the LLVM unwinder for 32-bit ARM.
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+endif
 include $(PREBUILT_SHARED_LIBRARY)
+
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+# We define this module here rather than in a separate cxx-stl/libunwind because
+# we don't actually want to make the API available (yet).
+include $(CLEAR_VARS)
+LOCAL_MODULE := libunwind
+LOCAL_SRC_FILES := libs/$(TARGET_ARCH_ABI)/$(LOCAL_MODULE)$(TARGET_LIB_EXTENSION)
+LOCAL_EXPORT_LDLIBS := -ldl
+include $(PREBUILT_STATIC_LIBRARY)
+endif
 
 $(call import-module, cxx-stl/llvm-libc++abi)
 
@@ -146,9 +150,6 @@ $(call ndk_log,Rebuilding libc++ libraries from sources)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := c++_static
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/../../../../NOTICE
 LOCAL_SRC_FILES := $(libcxx_sources)
 LOCAL_C_INCLUDES := $(libcxx_includes)
 LOCAL_CPPFLAGS := $(libcxx_cxxflags) -ffunction-sections -fdata-sections
@@ -157,21 +158,21 @@ LOCAL_EXPORT_C_INCLUDES := $(libcxx_export_includes)
 LOCAL_EXPORT_CPPFLAGS := $(libcxx_export_cxxflags)
 LOCAL_EXPORT_LDFLAGS := $(libcxx_export_ldflags)
 LOCAL_STATIC_LIBRARIES := libc++abi
-LOCAL_ARM_NEON := false
 
 ifeq ($(NDK_PLATFORM_NEEDS_ANDROID_SUPPORT),true)
     LOCAL_STATIC_LIBRARIES += android_support
 endif
 
-LOCAL_STATIC_LIBRARIES += libunwind
-LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+# We use the LLVM unwinder for all the 32-bit ARM targets.
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_STATIC_LIBRARIES += libunwind
+    LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+endif
+
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := c++_shared
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/../../../../NOTICE
 LOCAL_STRIP_MODE := none
 LOCAL_SRC_FILES := $(libcxx_sources)
 LOCAL_C_INCLUDES := $(libcxx_includes)
@@ -189,9 +190,12 @@ LOCAL_LDFLAGS := $(libcxx_ldflags)
 # driver always links for C++ but we don't use.
 # See https://github.com/android-ndk/ndk/issues/105
 LOCAL_LDFLAGS += -Wl,--as-needed
-LOCAL_ARM_NEON := false
-LOCAL_STATIC_LIBRARIES += libunwind
-LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+
+# We use the LLVM unwinder for all the 32-bit ARM targets.
+ifneq (,$(filter armeabi%,$(TARGET_ARCH_ABI)))
+    LOCAL_STATIC_LIBRARIES += libunwind
+    LOCAL_EXPORT_STATIC_LIBRARIES += libunwind
+endif
 
 # But only need -latomic for armeabi.
 ifeq ($(TARGET_ARCH_ABI),armeabi)
@@ -199,8 +203,8 @@ ifeq ($(TARGET_ARCH_ABI),armeabi)
 endif
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-add-path, $(LOCAL_PATH)/../../..)
-$(call import-module, toolchain/llvm-project/libcxxabi)
+$(call import-add-path, $(LOCAL_PATH)/../..)
+$(call import-module, external/libcxxabi)
 
 endif # LIBCXX_FORCE_REBUILD == true
 

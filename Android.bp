@@ -46,6 +46,9 @@ ndk_prebuilt_static_stl {
         arm64: {
             enabled: false,
         },
+        riscv64: {
+            enabled: false,
+        },
         x86_64: {
             enabled: false,
         },

@@ -24,10 +24,7 @@ module std [system] {
       header "errno.h"
       export *
     }
-    module fenv_h {
-      header "fenv.h"
-      export *
-    }
+    // <fenv.h> provided by C library.
     // <float.h> provided by compiler or C library.
     module inttypes_h {
       header "inttypes.h"
@@ -231,11 +228,6 @@ module std [system] {
     header "atomic"
     export *
   }
-  module barrier {
-    requires cplusplus14
-    header "barrier"
-    export *
-  }
   module bit {
     header "bit"
     export *
@@ -267,10 +259,6 @@ module std [system] {
     header "complex"
     export *
   }
-  module concepts {
-    header "concepts"
-    export *
-  }
   module condition_variable {
     header "condition_variable"
     export *
@@ -282,10 +270,6 @@ module std [system] {
   }
   module exception {
     header "exception"
-    export *
-  }
-  module execution {
-    header "execution"
     export *
   }
   module filesystem {
@@ -341,11 +325,6 @@ module std [system] {
   }
   module iterator {
     header "iterator"
-    export *
-  }
-  module latch {
-    requires cplusplus14
-    header "latch"
     export *
   }
   module limits {
@@ -412,11 +391,6 @@ module std [system] {
   }
   module scoped_allocator {
     header "scoped_allocator"
-    export *
-  }
-  module semaphore {
-    requires cplusplus14
-    header "semaphore"
     export *
   }
   module set {

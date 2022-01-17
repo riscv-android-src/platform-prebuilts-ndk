@@ -1,13 +1,14 @@
 //===---------------------- catch_array_02.cpp ----------------------------===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is dual licensed under the MIT and the University of Illinois Open
+// Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 
 // Can you have a catch clause of array type that catches anything?
-// UNSUPPORTED: no-exceptions
+// UNSUPPORTED: libcxxabi-no-exceptions
 
 #include <cassert>
 

@@ -26,7 +26,8 @@
  * SUCH DAMAGE.
  */
 
-#pragma once
+#ifndef NDK_ANDROID_SUPPORT_WCTYPE_H
+#define NDK_ANDROID_SUPPORT_WCTYPE_H
 
 #include_next <wctype.h>
 
@@ -38,3 +39,5 @@ static __inline int iswblank(wint_t ch) { return isblank(ch); }
 #endif
 
 __END_DECLS
+
+#endif

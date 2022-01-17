@@ -1,9 +1,10 @@
 // -*- C++ -*-
 //===------------------------------ any -----------------------------------===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is distributed under the University of Illinois Open Source
+// License. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 
@@ -507,7 +508,7 @@ any::any(_ValueType && __v) : __h(nullptr)
 template <class _ValueType, class ..._Args, class _Tp, class>
 any::any(in_place_type_t<_ValueType>, _Args&&... __args) {
   __any_imp::_Handler<_Tp>::__create(*this, _VSTD::forward<_Args>(__args)...);
-}
+};
 
 template <class _ValueType, class _Up, class ..._Args, class _Tp, class>
 any::any(in_place_type_t<_ValueType>, initializer_list<_Up> __il, _Args&&... __args) {

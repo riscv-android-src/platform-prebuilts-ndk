@@ -9,16 +9,12 @@ LIBCXX_LIBS := ../../cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := android_support
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-BSD
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/NOTICE
 LOCAL_SRC_FILES := $(LIBCXX_LIBS)/lib$(LOCAL_MODULE)$(TARGET_LIB_EXTENSION)
 include $(PREBUILT_STATIC_LIBRARY)
 
 else # Building
 
 android_support_cflags := \
-    -D_GNU_SOURCE \
     -Drestrict=__restrict__ \
     -ffunction-sections \
     -fdata-sections \
@@ -119,17 +115,13 @@ endif
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := android_support
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-BSD
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/NOTICE
 LOCAL_SRC_FILES := $(android_support_sources)
 LOCAL_C_INCLUDES := $(android_support_c_includes)
 LOCAL_CFLAGS := $(android_support_cflags)
-LOCAL_ARM_NEON := false
 
 LOCAL_CPPFLAGS := \
     -fvisibility-inlines-hidden \
-    -std=gnu++11 \
+    -std=c++11 \
 
 include $(BUILD_STATIC_LIBRARY)
 

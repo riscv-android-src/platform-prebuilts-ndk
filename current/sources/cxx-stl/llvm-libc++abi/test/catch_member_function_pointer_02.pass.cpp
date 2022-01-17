@@ -1,18 +1,19 @@
 //===--------------- catch_member_function_pointer_02.cpp -----------------===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is dual licensed under the MIT and the University of Illinois Open
+// Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 
 // Can a noexcept member function pointer be caught by a non-noexcept catch
 // clause?
-// UNSUPPORTED: no-exceptions, libcxxabi-no-noexcept-function-type
+// UNSUPPORTED: libcxxabi-no-exceptions, libcxxabi-no-noexcept-function-type
 
 // GCC 7 and 8 support noexcept function types but this test still fails.
 // This is likely a bug in their implementation. Investigation needed.
-// XFAIL: gcc-7, gcc-8, gcc-9, gcc-10
+// XFAIL: gcc-7, gcc-8, gcc-9
 
 #include <cassert>
 

@@ -26,7 +26,8 @@
  * SUCH DAMAGE.
  */
 
-#pragma once
+#ifndef NDK_ANDROID_SUPPORT_WCHAR_H
+#define NDK_ANDROID_SUPPORT_WCHAR_H
 
 #include_next <wchar.h>
 
@@ -44,3 +45,5 @@ unsigned long long wcstoull(const wchar_t*, wchar_t**, int);
 #endif
 
 __END_DECLS
+
+#endif

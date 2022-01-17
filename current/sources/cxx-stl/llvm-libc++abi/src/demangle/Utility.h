@@ -1,33 +1,32 @@
 //===--- Utility.h ----------------------------------------------*- C++ -*-===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
 //
-//===----------------------------------------------------------------------===//
+// This file is distributed under the University of Illinois Open Source
+// License. See LICENSE.TXT for details.
 //
-// Provide some utility classes for use in the demangler(s).
 //
+// This file is copied from llvm/lib/Demangle/Utility.h.
 //===----------------------------------------------------------------------===//
 
-#ifndef DEMANGLE_UTILITY_H
-#define DEMANGLE_UTILITY_H
+#ifndef LIBCXX_DEMANGLE_UTILITY_H
+#define LIBCXX_DEMANGLE_UTILITY_H
 
 #include "StringView.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
 #include <limits>
 
-DEMANGLE_NAMESPACE_BEGIN
-
+namespace {
 // Stream that AST nodes write their string representation into after the AST
 // has been parsed.
 class OutputStream {
-  char *Buffer = nullptr;
-  size_t CurrentPosition = 0;
-  size_t BufferCapacity = 0;
+  char *Buffer;
+  size_t CurrentPosition;
+  size_t BufferCapacity;
 
   // Ensure there is at least n more positions in buffer.
   void grow(size_t N) {
@@ -137,7 +136,7 @@ public:
 
   char *getBuffer() { return Buffer; }
   char *getBufferEnd() { return Buffer + CurrentPosition - 1; }
-  size_t getBufferCapacity() const { return BufferCapacity; }
+  size_t getBufferCapacity() { return BufferCapacity; }
 };
 
 template <class T> class SwapAndRestore {
@@ -186,6 +185,6 @@ inline bool initializeOutputStream(char *Buf, size_t *N, OutputStream &S,
   return true;
 }
 
-DEMANGLE_NAMESPACE_END
+} // namespace
 
 #endif

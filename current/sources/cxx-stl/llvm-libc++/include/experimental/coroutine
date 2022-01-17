@@ -1,9 +1,10 @@
 // -*- C++ -*-
 //===----------------------------- coroutine -----------------------------===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is distributed under the University of Illinois Open Source
+// License. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 
@@ -51,6 +52,7 @@ template <class P> struct hash<coroutine_handle<P>>;
 #include <functional>
 #include <memory> // for hash<T*>
 #include <cstddef>
+#include <cassert>
 #include <__debug>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
@@ -80,7 +82,7 @@ struct __coroutine_traits_sfinae<
 };
 
 template <typename _Ret, typename... _Args>
-struct coroutine_traits
+struct _LIBCPP_TEMPLATE_VIS coroutine_traits
     : public __coroutine_traits_sfinae<_Ret>
 {
 };
@@ -212,7 +214,7 @@ public:
     _LIBCPP_INLINE_VISIBILITY
     _Promise& promise() const {
         return *static_cast<_Promise*>(
-            __builtin_coro_promise(this->__handle_, _LIBCPP_ALIGNOF(_Promise), false));
+            __builtin_coro_promise(this->__handle_, __alignof(_Promise), false));
     }
 
 public:
@@ -252,7 +254,7 @@ public:
         coroutine_handle __tmp;
         __tmp.__handle_ = __builtin_coro_promise(
             _VSTD::addressof(const_cast<_RawPromise&>(__promise)),
-             _LIBCPP_ALIGNOF(_Promise), true);
+             __alignof(_Promise), true);
         return __tmp;
     }
 };
@@ -270,7 +272,7 @@ public:
   _LIBCPP_INLINE_VISIBILITY
   _Promise& promise() const {
     return *static_cast<_Promise*>(
-      __builtin_coro_promise(this->__handle_, _LIBCPP_ALIGNOF(_Promise), false));
+      __builtin_coro_promise(this->__handle_, __alignof(_Promise), false));
   }
 
   _LIBCPP_CONSTEXPR explicit operator bool() const _NOEXCEPT { return true; }
@@ -297,7 +299,7 @@ noop_coroutine_handle noop_coroutine() _NOEXCEPT {
 }
 #endif // __has_builtin(__builtin_coro_noop)
 
-struct suspend_never {
+struct _LIBCPP_TYPE_VIS suspend_never {
   _LIBCPP_INLINE_VISIBILITY
   bool await_ready() const _NOEXCEPT { return true; }
   _LIBCPP_INLINE_VISIBILITY
@@ -306,7 +308,7 @@ struct suspend_never {
   void await_resume() const _NOEXCEPT {}
 };
 
-struct suspend_always {
+struct _LIBCPP_TYPE_VIS suspend_always {
   _LIBCPP_INLINE_VISIBILITY
   bool await_ready() const _NOEXCEPT { return false; }
   _LIBCPP_INLINE_VISIBILITY

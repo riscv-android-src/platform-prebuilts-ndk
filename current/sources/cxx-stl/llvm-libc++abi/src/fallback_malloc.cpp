@@ -1,8 +1,9 @@
 //===------------------------ fallback_malloc.cpp -------------------------===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is dual licensed under the MIT and the University of Illinois Open
+// Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 
@@ -12,14 +13,9 @@
 #include "fallback_malloc.h"
 
 #include <__threading_support>
-#ifndef _LIBCXXABI_HAS_NO_THREADS
-#if defined(__ELF__) && defined(_LIBCXXABI_LINK_PTHREAD_LIB)
-#pragma comment(lib, "pthread")
-#endif
-#endif
 
-#include <stdlib.h> // for malloc, calloc, free
-#include <string.h> // for memset
+#include <cstdlib> // for malloc, calloc, free
+#include <cstring> // for memset
 
 //  A small, simple heap manager based (loosely) on
 //  the startup heap manager from FreeBSD, optimized for space.
@@ -214,7 +210,7 @@ void* __aligned_malloc_with_fallback(size_t size) {
   if (void* dest = _aligned_malloc(size, alignof(__aligned_type)))
     return dest;
 #elif defined(_LIBCPP_HAS_NO_LIBRARY_ALIGNED_ALLOCATION)
-  if (void* dest = ::malloc(size))
+  if (void* dest = std::malloc(size))
     return dest;
 #else
   if (size == 0)
@@ -227,13 +223,13 @@ void* __aligned_malloc_with_fallback(size_t size) {
 }
 
 void* __calloc_with_fallback(size_t count, size_t size) {
-  void* ptr = ::calloc(count, size);
+  void* ptr = std::calloc(count, size);
   if (NULL != ptr)
     return ptr;
   // if calloc fails, fall back to emergency stash
   ptr = fallback_malloc(size * count);
   if (NULL != ptr)
-    ::memset(ptr, 0, size * count);
+    std::memset(ptr, 0, size * count);
   return ptr;
 }
 
@@ -244,7 +240,7 @@ void __aligned_free_with_fallback(void* ptr) {
 #if defined(_WIN32)
     ::_aligned_free(ptr);
 #else
-    ::free(ptr);
+    std::free(ptr);
 #endif
   }
 }
@@ -253,7 +249,7 @@ void __free_with_fallback(void* ptr) {
   if (is_fallback_ptr(ptr))
     fallback_free(ptr);
   else
-    ::free(ptr);
+    std::free(ptr);
 }
 
 } // namespace __cxxabiv1

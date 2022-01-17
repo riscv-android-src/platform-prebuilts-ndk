@@ -39,23 +39,24 @@ libcxxabi_src_files := \
 
 libcxxabi_includes := \
     $(LOCAL_PATH)/include \
+    $(LOCAL_PATH)/../libunwind_llvm/include \
     $(LOCAL_PATH)/../libcxx/include \
 
 libcxxabi_cflags := -D__STDC_FORMAT_MACROS
-libcxxabi_cppflags := -std=c++11 -Wno-unknown-attributes -DHAS_THREAD_LOCAL
-libcxxabi_cppflags += -DLIBCXXABI_USE_LLVM_UNWINDER=1
+libcxxabi_cppflags := -std=c++11 -Wno-unknown-attributes
 
-ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-    libcxxabi_cppflags += -mbranch-protection=standard
+ifneq (,$(filter armeabi%,$(TARGET_ARCH_ABI)))
+    use_llvm_unwinder := true
+    libcxxabi_cppflags += -DLIBCXXABI_USE_LLVM_UNWINDER=1
+else
+    use_llvm_unwinder := false
+    libcxxabi_cppflags += -DLIBCXXABI_USE_LLVM_UNWINDER=0
 endif
 
 ifneq ($(LIBCXX_FORCE_REBUILD),true) # Using prebuilt
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libc++abi
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0 SPDX-license-identifier-BSD SPDX-license-identifier-MIT SPDX-license-identifier-NCSA
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/LICENSE.TXT $(LOCAL_PATH)/NOTICE
 LOCAL_SRC_FILES := ../llvm-libc++/libs/$(TARGET_ARCH_ABI)/$(LOCAL_MODULE)$(TARGET_LIB_EXTENSION)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 
@@ -63,23 +64,21 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 # on static libraries and topologically sort them to determine link order.
 # Though there is no link step, without this we may link libunwind before
 # libc++abi, which won't succeed.
-LOCAL_STATIC_LIBRARIES += libunwind
-LOCAL_EXPORT_STATIC_LIBRARIES := libunwind
+ifeq ($(use_llvm_unwinder),true)
+    LOCAL_STATIC_LIBRARIES += libunwind
+    LOCAL_EXPORT_STATIC_LIBRARIES := libunwind
+endif
 include $(PREBUILT_STATIC_LIBRARY)
 
 else # Building
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libc++abi
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0 SPDX-license-identifier-BSD SPDX-license-identifier-MIT SPDX-license-identifier-NCSA
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/LICENSE.TXT $(LOCAL_PATH)/NOTICE
 LOCAL_SRC_FILES := $(libcxxabi_src_files)
 LOCAL_C_INCLUDES := $(libcxxabi_includes)
 LOCAL_CPPFLAGS := $(libcxxabi_cppflags)
 LOCAL_CPP_FEATURES := rtti exceptions
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
-LOCAL_ARM_NEON := false
 
 ifeq ($(NDK_PLATFORM_NEEDS_ANDROID_SUPPORT),true)
     # This doesn't affect the prebuilt itself since this is a prebuilt library,
@@ -92,21 +91,15 @@ endif
 # on static libraries and topologically sort them to determine link order.
 # Though there is no link step, without this we may link libunwind before
 # libc++abi, which won't succeed.
-LOCAL_STATIC_LIBRARIES += libunwind
-LOCAL_EXPORT_STATIC_LIBRARIES := libunwind
+ifeq ($(use_llvm_unwinder),true)
+    LOCAL_STATIC_LIBRARIES += libunwind
+    LOCAL_EXPORT_STATIC_LIBRARIES := libunwind
+endif
 include $(BUILD_STATIC_LIBRARY)
 
-endif # Prebuilt/building
+$(call import-add-path, $(LOCAL_PATH)/../..)
+$(call import-module, external/libunwind_llvm)
 
-# Define a prebuilt module for libunwind.a so that ndk-build adds it to the
-# linker command-line before any shared libraries, ensuring that the unwinder
-# is linked statically even if a shared library dependency exports an unwinder.
-include $(CLEAR_VARS)
-LOCAL_MODULE := libunwind
-LOCAL_LICENSE_KINDS := SPDX-license-identifier-Apache-2.0 SPDX-license-identifier-BSD SPDX-license-identifier-MIT SPDX-license-identifier-NCSA
-LOCAL_LICENSE_CONDITIONS := notice
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/LICENSE.TXT $(LOCAL_PATH)/NOTICE
-LOCAL_SRC_FILES := $(NDK_TOOLCHAIN_LIB_DIR)/$(TARGET_TOOLCHAIN_ARCH_LIB_DIR)/libunwind.a
-include $(PREBUILT_STATIC_LIBRARY)
+endif # Prebuilt/building
 
 $(call import-module, android/support)

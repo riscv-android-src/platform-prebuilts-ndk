@@ -1,26 +1,28 @@
 //===------------------------- ItaniumDemangle.h ----------------*- C++ -*-===//
 //
-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-// See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//                     The LLVM Compiler Infrastructure
+//
+// This file is dual licensed under the MIT and the University of Illinois Open
+// Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
 //
-// Generic itanium demangler library. This file has two byte-per-byte identical
-// copies in the source tree, one in libcxxabi, and the other in llvm.
+// WARNING: This file defines its contents within an anonymous namespace. It
+// should not be included anywhere other than cxa_demangle.h.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef DEMANGLE_ITANIUMDEMANGLE_H
-#define DEMANGLE_ITANIUMDEMANGLE_H
+#ifndef LIBCXX_DEMANGLE_ITANIUMDEMANGLE_H
+#define LIBCXX_DEMANGLE_ITANIUMDEMANGLE_H
 
 // FIXME: (possibly) incomplete list of features that clang mangles that this
 // file does not yet support:
 //   - C++ modules TS
 
-#include "DemangleConfig.h"
+#include "Compiler.h"
 #include "StringView.h"
 #include "Utility.h"
+
 #include <cassert>
 #include <cctype>
 #include <cstdio>
@@ -57,11 +59,6 @@
     X(LocalName) \
     X(VectorType) \
     X(PixelVectorType) \
-    X(SyntheticTemplateParamName) \
-    X(TypeTemplateParamDecl) \
-    X(NonTypeTemplateParamDecl) \
-    X(TemplateTemplateParamDecl) \
-    X(TemplateParamPackDecl) \
     X(ParameterPack) \
     X(TemplateArgumentPack) \
     X(ParameterPackExpansion) \
@@ -94,10 +91,7 @@
     X(InitListExpr) \
     X(FoldExpr) \
     X(ThrowExpr) \
-    X(UUIDOfExpr) \
     X(BoolExpr) \
-    X(StringLiteral) \
-    X(LambdaExpr) \
     X(IntegerCastExpr) \
     X(IntegerLiteral) \
     X(FloatLiteral) \
@@ -106,8 +100,8 @@
     X(BracedExpr) \
     X(BracedRangeExpr)
 
-DEMANGLE_NAMESPACE_BEGIN
-
+namespace {
+namespace itanium_demangle {
 // Base class of all AST nodes. The AST is built by the parser, then is
 // traversed by the printLeft/Right functions to produce a demangled string.
 class Node {
@@ -205,7 +199,7 @@ public:
   virtual ~Node() = default;
 
 #ifndef NDEBUG
-  DEMANGLE_DUMP_METHOD void dump() const;
+  DUMP_METHOD void dump() const;
 #endif
 };
 
@@ -310,7 +304,7 @@ inline Qualifiers operator|=(Qualifiers &Q1, Qualifiers Q2) {
   return Q1 = static_cast<Qualifiers>(Q1 | Q2);
 }
 
-class QualType final : public Node {
+class QualType : public Node {
 protected:
   const Qualifiers Quals;
   const Node *Child;
@@ -607,12 +601,48 @@ public:
   }
 };
 
-class ArrayType final : public Node {
-  const Node *Base;
-  Node *Dimension;
+class NodeOrString {
+  const void *First;
+  const void *Second;
 
 public:
-  ArrayType(const Node *Base_, Node *Dimension_)
+  /* implicit */ NodeOrString(StringView Str) {
+    const char *FirstChar = Str.begin();
+    const char *SecondChar = Str.end();
+    if (SecondChar == nullptr) {
+      assert(FirstChar == SecondChar);
+      ++FirstChar, ++SecondChar;
+    }
+    First = static_cast<const void *>(FirstChar);
+    Second = static_cast<const void *>(SecondChar);
+  }
+
+  /* implicit */ NodeOrString(Node *N)
+      : First(static_cast<const void *>(N)), Second(nullptr) {}
+  NodeOrString() : First(nullptr), Second(nullptr) {}
+
+  bool isString() const { return Second && First; }
+  bool isNode() const { return First && !Second; }
+  bool isEmpty() const { return !First && !Second; }
+
+  StringView asString() const {
+    assert(isString());
+    return StringView(static_cast<const char *>(First),
+                      static_cast<const char *>(Second));
+  }
+
+  const Node *asNode() const {
+    assert(isNode());
+    return static_cast<const Node *>(First);
+  }
+};
+
+class ArrayType final : public Node {
+  const Node *Base;
+  NodeOrString Dimension;
+
+public:
+  ArrayType(const Node *Base_, NodeOrString Dimension_)
       : Node(KArrayType,
              /*RHSComponentCache=*/Cache::Yes,
              /*ArrayCache=*/Cache::Yes),
@@ -629,8 +659,10 @@ public:
     if (S.back() != ']')
       S += " ";
     S += "[";
-    if (Dimension)
-      Dimension->print(S);
+    if (Dimension.isString())
+      S += Dimension.asString();
+    else if (Dimension.isNode())
+      Dimension.asNode()->print(S);
     S += "]";
     Base->printRight(S);
   }
@@ -896,10 +928,10 @@ public:
 
 class VectorType final : public Node {
   const Node *BaseType;
-  const Node *Dimension;
+  const NodeOrString Dimension;
 
 public:
-  VectorType(const Node *BaseType_, Node *Dimension_)
+  VectorType(const Node *BaseType_, NodeOrString Dimension_)
       : Node(KVectorType), BaseType(BaseType_),
         Dimension(Dimension_) {}
 
@@ -908,17 +940,19 @@ public:
   void printLeft(OutputStream &S) const override {
     BaseType->print(S);
     S += " vector[";
-    if (Dimension)
-      Dimension->print(S);
+    if (Dimension.isNode())
+      Dimension.asNode()->print(S);
+    else if (Dimension.isString())
+      S += Dimension.asString();
     S += "]";
   }
 };
 
 class PixelVectorType final : public Node {
-  const Node *Dimension;
+  const NodeOrString Dimension;
 
 public:
-  PixelVectorType(const Node *Dimension_)
+  PixelVectorType(NodeOrString Dimension_)
       : Node(KPixelVectorType), Dimension(Dimension_) {}
 
   template<typename Fn> void match(Fn F) const { F(Dimension); }
@@ -926,129 +960,8 @@ public:
   void printLeft(OutputStream &S) const override {
     // FIXME: This should demangle as "vector pixel".
     S += "pixel vector[";
-    Dimension->print(S);
+    S += Dimension.asString();
     S += "]";
-  }
-};
-
-enum class TemplateParamKind { Type, NonType, Template };
-
-/// An invented name for a template parameter for which we don't have a
-/// corresponding template argument.
-///
-/// This node is created when parsing the <lambda-sig> for a lambda with
-/// explicit template arguments, which might be referenced in the parameter
-/// types appearing later in the <lambda-sig>.
-class SyntheticTemplateParamName final : public Node {
-  TemplateParamKind Kind;
-  unsigned Index;
-
-public:
-  SyntheticTemplateParamName(TemplateParamKind Kind_, unsigned Index_)
-      : Node(KSyntheticTemplateParamName), Kind(Kind_), Index(Index_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Kind, Index); }
-
-  void printLeft(OutputStream &S) const override {
-    switch (Kind) {
-    case TemplateParamKind::Type:
-      S += "$T";
-      break;
-    case TemplateParamKind::NonType:
-      S += "$N";
-      break;
-    case TemplateParamKind::Template:
-      S += "$TT";
-      break;
-    }
-    if (Index > 0)
-      S << Index - 1;
-  }
-};
-
-/// A template type parameter declaration, 'typename T'.
-class TypeTemplateParamDecl final : public Node {
-  Node *Name;
-
-public:
-  TypeTemplateParamDecl(Node *Name_)
-      : Node(KTypeTemplateParamDecl, Cache::Yes), Name(Name_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Name); }
-
-  void printLeft(OutputStream &S) const override {
-    S += "typename ";
-  }
-
-  void printRight(OutputStream &S) const override {
-    Name->print(S);
-  }
-};
-
-/// A non-type template parameter declaration, 'int N'.
-class NonTypeTemplateParamDecl final : public Node {
-  Node *Name;
-  Node *Type;
-
-public:
-  NonTypeTemplateParamDecl(Node *Name_, Node *Type_)
-      : Node(KNonTypeTemplateParamDecl, Cache::Yes), Name(Name_), Type(Type_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Name, Type); }
-
-  void printLeft(OutputStream &S) const override {
-    Type->printLeft(S);
-    if (!Type->hasRHSComponent(S))
-      S += " ";
-  }
-
-  void printRight(OutputStream &S) const override {
-    Name->print(S);
-    Type->printRight(S);
-  }
-};
-
-/// A template template parameter declaration,
-/// 'template<typename T> typename N'.
-class TemplateTemplateParamDecl final : public Node {
-  Node *Name;
-  NodeArray Params;
-
-public:
-  TemplateTemplateParamDecl(Node *Name_, NodeArray Params_)
-      : Node(KTemplateTemplateParamDecl, Cache::Yes), Name(Name_),
-        Params(Params_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Name, Params); }
-
-  void printLeft(OutputStream &S) const override {
-    S += "template<";
-    Params.printWithComma(S);
-    S += "> typename ";
-  }
-
-  void printRight(OutputStream &S) const override {
-    Name->print(S);
-  }
-};
-
-/// A template parameter pack declaration, 'typename ...T'.
-class TemplateParamPackDecl final : public Node {
-  Node *Param;
-
-public:
-  TemplateParamPackDecl(Node *Param_)
-      : Node(KTemplateParamPackDecl, Cache::Yes), Param(Param_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Param); }
-
-  void printLeft(OutputStream &S) const override {
-    Param->printLeft(S);
-    S += "...";
-  }
-
-  void printRight(OutputStream &S) const override {
-    Param->printRight(S);
   }
 };
 
@@ -1370,7 +1283,7 @@ public:
     case SpecialSubKind::iostream:
       return StringView("basic_iostream");
     }
-    DEMANGLE_UNREACHABLE;
+    _LIBCPP_UNREACHABLE();
   }
 
   void printLeft(OutputStream &S) const override {
@@ -1422,7 +1335,7 @@ public:
     case SpecialSubKind::iostream:
       return StringView("iostream");
     }
-    DEMANGLE_UNREACHABLE;
+    _LIBCPP_UNREACHABLE();
   }
 
   void printLeft(OutputStream &S) const override {
@@ -1498,36 +1411,21 @@ public:
 };
 
 class ClosureTypeName : public Node {
-  NodeArray TemplateParams;
   NodeArray Params;
   StringView Count;
 
 public:
-  ClosureTypeName(NodeArray TemplateParams_, NodeArray Params_,
-                  StringView Count_)
-      : Node(KClosureTypeName), TemplateParams(TemplateParams_),
-        Params(Params_), Count(Count_) {}
+  ClosureTypeName(NodeArray Params_, StringView Count_)
+      : Node(KClosureTypeName), Params(Params_), Count(Count_) {}
 
-  template<typename Fn> void match(Fn F) const {
-    F(TemplateParams, Params, Count);
-  }
-
-  void printDeclarator(OutputStream &S) const {
-    if (!TemplateParams.empty()) {
-      S += "<";
-      TemplateParams.printWithComma(S);
-      S += ">";
-    }
-    S += "(";
-    Params.printWithComma(S);
-    S += ")";
-  }
+  template<typename Fn> void match(Fn F) const { F(Params, Count); }
 
   void printLeft(OutputStream &S) const override {
     S += "\'lambda";
     S += Count;
-    S += "\'";
-    printDeclarator(S);
+    S += "\'(";
+    Params.printWithComma(S);
+    S += ")";
   }
 };
 
@@ -1977,21 +1875,6 @@ public:
   }
 };
 
-// MSVC __uuidof extension, generated by clang in -fms-extensions mode.
-class UUIDOfExpr : public Node {
-  Node *Operand;
-public:
-  UUIDOfExpr(Node *Operand_) : Node(KUUIDOfExpr), Operand(Operand_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Operand); }
-
-  void printLeft(OutputStream &S) const override {
-    S << "__uuidof(";
-    Operand->print(S);
-    S << ")";
-  }
-};
-
 class BoolExpr : public Node {
   bool Value;
 
@@ -2002,37 +1885,6 @@ public:
 
   void printLeft(OutputStream &S) const override {
     S += Value ? StringView("true") : StringView("false");
-  }
-};
-
-class StringLiteral : public Node {
-  const Node *Type;
-
-public:
-  StringLiteral(const Node *Type_) : Node(KStringLiteral), Type(Type_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Type); }
-
-  void printLeft(OutputStream &S) const override {
-    S += "\"<";
-    Type->print(S);
-    S += ">\"";
-  }
-};
-
-class LambdaExpr : public Node {
-  const Node *Type;
-
-public:
-  LambdaExpr(const Node *Type_) : Node(KLambdaExpr), Type(Type_) {}
-
-  template<typename Fn> void match(Fn F) const { F(Type); }
-
-  void printLeft(OutputStream &S) const override {
-    S += "[]";
-    if (Type->getKind() == KClosureTypeName)
-      static_cast<const ClosureTypeName *>(Type)->printDeclarator(S);
-    S += "{...}";
   }
 };
 
@@ -2173,10 +2025,10 @@ class PODSmallVector {
   static_assert(std::is_pod<T>::value,
                 "T is required to be a plain old data type");
 
-  T* First = nullptr;
-  T* Last = nullptr;
-  T* Cap = nullptr;
-  T Inline[N] = {0};
+  T* First;
+  T* Last;
+  T* Cap;
+  T Inline[N];
 
   bool isInline() const { return First == Inline; }
 
@@ -2301,36 +2153,10 @@ template <typename Derived, typename Alloc> struct AbstractManglingParser {
   // table.
   PODSmallVector<Node *, 32> Subs;
 
-  using TemplateParamList = PODSmallVector<Node *, 8>;
-
-  class ScopedTemplateParamList {
-    AbstractManglingParser *Parser;
-    size_t OldNumTemplateParamLists;
-    TemplateParamList Params;
-
-  public:
-    ScopedTemplateParamList(AbstractManglingParser *Parser)
-        : Parser(Parser),
-          OldNumTemplateParamLists(Parser->TemplateParams.size()) {
-      Parser->TemplateParams.push_back(&Params);
-    }
-    ~ScopedTemplateParamList() {
-      assert(Parser->TemplateParams.size() >= OldNumTemplateParamLists);
-      Parser->TemplateParams.dropBack(OldNumTemplateParamLists);
-    }
-  };
-
   // Template parameter table. Like the above, but referenced like "T42_".
   // This has a smaller size compared to Subs and Names because it can be
   // stored on the stack.
-  TemplateParamList OuterTemplateParams;
-
-  // Lists of template parameters indexed by template parameter depth,
-  // referenced like "TL2_4_". If nonempty, element 0 is always
-  // OuterTemplateParams; inner elements are always template parameter lists of
-  // lambda expressions. For a generic lambda with no explicit template
-  // parameter list, the corresponding parameter list pointer will be null.
-  PODSmallVector<TemplateParamList *, 4> TemplateParams;
+  PODSmallVector<Node *, 8> TemplateParams;
 
   // Set of unresolved forward <template-param> references. These can occur in a
   // conversion operator's type, and are resolved in the enclosing <encoding>.
@@ -2338,9 +2164,7 @@ template <typename Derived, typename Alloc> struct AbstractManglingParser {
 
   bool TryToParseTemplateArgs = true;
   bool PermitForwardTemplateReferences = false;
-  size_t ParsingLambdaParamsAtLevel = (size_t)-1;
-
-  unsigned NumSyntheticTemplateParameters[3] = {};
+  bool ParsingLambdaParams = false;
 
   Alloc ASTAllocator;
 
@@ -2355,11 +2179,9 @@ template <typename Derived, typename Alloc> struct AbstractManglingParser {
     Names.clear();
     Subs.clear();
     TemplateParams.clear();
-    ParsingLambdaParamsAtLevel = (size_t)-1;
+    ParsingLambdaParams = false;
     TryToParseTemplateArgs = true;
     PermitForwardTemplateReferences = false;
-    for (int I = 0; I != 3; ++I)
-      NumSyntheticTemplateParameters[I] = 0;
     ASTAllocator.reset();
   }
 
@@ -2417,7 +2239,6 @@ template <typename Derived, typename Alloc> struct AbstractManglingParser {
   bool parseSeqId(size_t *Out);
   Node *parseSubstitution();
   Node *parseTemplateParam();
-  Node *parseTemplateParamDecl();
   Node *parseTemplateArgs(bool TagTemplates = false);
   Node *parseTemplateArg();
 
@@ -2466,10 +2287,9 @@ template <typename Derived, typename Alloc> struct AbstractManglingParser {
     size_t E = ForwardTemplateRefs.size();
     for (; I < E; ++I) {
       size_t Idx = ForwardTemplateRefs[I]->Index;
-      if (TemplateParams.empty() || !TemplateParams[0] ||
-          Idx >= TemplateParams[0]->size())
+      if (Idx >= TemplateParams.size())
         return true;
-      ForwardTemplateRefs[I]->Ref = (*TemplateParams[0])[Idx];
+      ForwardTemplateRefs[I]->Ref = TemplateParams[Idx];
     }
     ForwardTemplateRefs.dropBack(State.ForwardTemplateRefsBegin);
     return false;
@@ -2636,12 +2456,7 @@ AbstractManglingParser<Derived, Alloc>::parseUnqualifiedName(NameState *State) {
 // <lambda-sig> ::= <parameter type>+  # Parameter types or "v" if the lambda has no parameters
 template <typename Derived, typename Alloc>
 Node *
-AbstractManglingParser<Derived, Alloc>::parseUnnamedTypeName(NameState *State) {
-  // <template-params> refer to the innermost <template-args>. Clear out any
-  // outer args that we may have inserted into TemplateParams.
-  if (State != nullptr)
-    TemplateParams.clear();
-
+AbstractManglingParser<Derived, Alloc>::parseUnnamedTypeName(NameState *) {
   if (consumeIf("Ut")) {
     StringView Count = parseNumber();
     if (!consumeIf('_'))
@@ -2649,65 +2464,22 @@ AbstractManglingParser<Derived, Alloc>::parseUnnamedTypeName(NameState *State) {
     return make<UnnamedTypeName>(Count);
   }
   if (consumeIf("Ul")) {
-    SwapAndRestore<size_t> SwapParams(ParsingLambdaParamsAtLevel,
-                                      TemplateParams.size());
-    ScopedTemplateParamList LambdaTemplateParams(this);
-
-    size_t ParamsBegin = Names.size();
-    while (look() == 'T' &&
-           StringView("yptn").find(look(1)) != StringView::npos) {
-      Node *T = parseTemplateParamDecl();
-      if (!T)
-        return nullptr;
-      Names.push_back(T);
-    }
-    NodeArray TempParams = popTrailingNodeArray(ParamsBegin);
-
-    // FIXME: If TempParams is empty and none of the function parameters
-    // includes 'auto', we should remove LambdaTemplateParams from the
-    // TemplateParams list. Unfortunately, we don't find out whether there are
-    // any 'auto' parameters until too late in an example such as:
-    //
-    //   template<typename T> void f(
-    //       decltype([](decltype([]<typename T>(T v) {}),
-    //                   auto) {})) {}
-    //   template<typename T> void f(
-    //       decltype([](decltype([]<typename T>(T w) {}),
-    //                   int) {})) {}
-    //
-    // Here, the type of v is at level 2 but the type of w is at level 1. We
-    // don't find this out until we encounter the type of the next parameter.
-    //
-    // However, compilers can't actually cope with the former example in
-    // practice, and it's likely to be made ill-formed in future, so we don't
-    // need to support it here.
-    //
-    // If we encounter an 'auto' in the function parameter types, we will
-    // recreate a template parameter scope for it, but any intervening lambdas
-    // will be parsed in the 'wrong' template parameter depth.
-    if (TempParams.empty())
-      TemplateParams.pop_back();
-
+    NodeArray Params;
+    SwapAndRestore<bool> SwapParams(ParsingLambdaParams, true);
     if (!consumeIf("vE")) {
+      size_t ParamsBegin = Names.size();
       do {
         Node *P = getDerived().parseType();
         if (P == nullptr)
           return nullptr;
         Names.push_back(P);
       } while (!consumeIf('E'));
+      Params = popTrailingNodeArray(ParamsBegin);
     }
-    NodeArray Params = popTrailingNodeArray(ParamsBegin);
-
     StringView Count = parseNumber();
     if (!consumeIf('_'))
       return nullptr;
-    return make<ClosureTypeName>(TempParams, Params, Count);
-  }
-  if (consumeIf("Ub")) {
-    (void)parseNumber();
-    if (!consumeIf('_'))
-      return nullptr;
-    return make<NameType>("'block-literal'");
+    return make<ClosureTypeName>(Params, Count);
   }
   return nullptr;
 }
@@ -3018,13 +2790,11 @@ AbstractManglingParser<Derived, Alloc>::parseOperatorName(NameState *State) {
 // <ctor-dtor-name> ::= C1  # complete object constructor
 //                  ::= C2  # base object constructor
 //                  ::= C3  # complete object allocating constructor
-//   extension      ::= C4  # gcc old-style "[unified]" constructor
-//   extension      ::= C5  # the COMDAT used for ctors
+//   extension      ::= C5    # ?
 //                  ::= D0  # deleting destructor
 //                  ::= D1  # complete object destructor
 //                  ::= D2  # base object destructor
-//   extension      ::= D4  # gcc old-style "[unified]" destructor
-//   extension      ::= D5  # the COMDAT used for dtors
+//   extension      ::= D5    # ?
 template <typename Derived, typename Alloc>
 Node *
 AbstractManglingParser<Derived, Alloc>::parseCtorDtorName(Node *&SoFar,
@@ -3047,8 +2817,7 @@ AbstractManglingParser<Derived, Alloc>::parseCtorDtorName(Node *&SoFar,
 
   if (consumeIf('C')) {
     bool IsInherited = consumeIf('I');
-    if (look() != '1' && look() != '2' && look() != '3' && look() != '4' &&
-        look() != '5')
+    if (look() != '1' && look() != '2' && look() != '3' && look() != '5')
       return nullptr;
     int Variant = look() - '0';
     ++First;
@@ -3057,15 +2826,15 @@ AbstractManglingParser<Derived, Alloc>::parseCtorDtorName(Node *&SoFar,
       if (getDerived().parseName(State) == nullptr)
         return nullptr;
     }
-    return make<CtorDtorName>(SoFar, /*IsDtor=*/false, Variant);
+    return make<CtorDtorName>(SoFar, false, Variant);
   }
 
-  if (look() == 'D' && (look(1) == '0' || look(1) == '1' || look(1) == '2' ||
-                        look(1) == '4' || look(1) == '5')) {
+  if (look() == 'D' &&
+      (look(1) == '0' || look(1) == '1' || look(1) == '2' || look(1) == '5')) {
     int Variant = look(1) - '0';
     First += 2;
     if (State) State->CtorDtorConversion = true;
-    return make<CtorDtorName>(SoFar, /*IsDtor=*/true, Variant);
+    return make<CtorDtorName>(SoFar, true, Variant);
   }
 
   return nullptr;
@@ -3508,9 +3277,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parseVectorType() {
   if (!consumeIf("Dv"))
     return nullptr;
   if (look() >= '1' && look() <= '9') {
-    Node *DimensionNumber = make<NameType>(parseNumber());
-    if (!DimensionNumber)
-      return nullptr;
+    StringView DimensionNumber = parseNumber();
     if (!consumeIf('_'))
       return nullptr;
     if (consumeIf('p'))
@@ -3535,7 +3302,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parseVectorType() {
   Node *ElemType = getDerived().parseType();
   if (!ElemType)
     return nullptr;
-  return make<VectorType>(ElemType, /*Dimension=*/nullptr);
+  return make<VectorType>(ElemType, StringView());
 }
 
 // <decltype>  ::= Dt <expression> E  # decltype of an id-expression or class member access (C++0x)
@@ -3561,12 +3328,10 @@ Node *AbstractManglingParser<Derived, Alloc>::parseArrayType() {
   if (!consumeIf('A'))
     return nullptr;
 
-  Node *Dimension = nullptr;
+  NodeOrString Dimension;
 
   if (std::isdigit(look())) {
-    Dimension = make<NameType>(parseNumber());
-    if (!Dimension)
-      return nullptr;
+    Dimension = parseNumber();
     if (!consumeIf('_'))
       return nullptr;
   } else if (!consumeIf('_')) {
@@ -3707,7 +3472,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parseType() {
       Result = getDerived().parseFunctionType();
       break;
     }
-    DEMANGLE_FALLTHROUGH;
+    _LIBCPP_FALLTHROUGH();
   }
   case 'U': {
     Result = getDerived().parseQualifiedType();
@@ -3804,11 +3569,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parseType() {
     StringView Res = parseBareSourceName();
     if (Res.empty())
       return nullptr;
-    // Typically, <builtin-type>s are not considered substitution candidates,
-    // but the exception to that exception is vendor extended types (Itanium C++
-    // ABI 5.9.1).
-    Result = make<NameType>(Res);
-    break;
+    return make<NameType>(Res);
   }
   case 'D':
     switch (look(1)) {
@@ -3836,10 +3597,6 @@ Node *AbstractManglingParser<Derived, Alloc>::parseType() {
     case 's':
       First += 2;
       return make<NameType>("char16_t");
-    //                ::= Du   # char8_t (C++2a, not yet in the Itanium spec)
-    case 'u':
-      First += 2;
-      return make<NameType>("char8_t");
     //                ::= Da   # auto (in dependent new-expressions)
     case 'a':
       First += 2;
@@ -4002,7 +3759,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parseType() {
       // substitution table.
       return Sub;
     }
-    DEMANGLE_FALLTHROUGH;
+    _LIBCPP_FALLTHROUGH();
   }
   //        ::= <class-enum-type>
   default: {
@@ -4161,7 +3918,6 @@ Node *AbstractManglingParser<Derived, Alloc>::parseConversionExpr() {
 //                ::= L <type> <value float> E                           # floating literal
 //                ::= L <string type> E                                  # string literal
 //                ::= L <nullptr type> E                                 # nullptr literal (i.e., "LDnE")
-//                ::= L <lambda type> E                                  # lambda expression
 // FIXME:         ::= L <type> <real-part float> _ <imag-part float> E   # complex floating point literal (C 2000)
 //                ::= L <mangled-name> E                                 # external name
 template <typename Derived, typename Alloc>
@@ -4225,13 +3981,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parseExprPrimary() {
     return getDerived().template parseFloatingLiteral<double>();
   case 'e':
     ++First;
-#if defined(__powerpc__) || defined(__s390__)
-    // Handle cases where long doubles encoded with e have the same size
-    // and representation as doubles.
-    return getDerived().template parseFloatingLiteral<double>();
-#else
     return getDerived().template parseFloatingLiteral<long double>();
-#endif
   case '_':
     if (consumeIf("_Z")) {
       Node *R = getDerived().parseEncoding();
@@ -4239,43 +3989,24 @@ Node *AbstractManglingParser<Derived, Alloc>::parseExprPrimary() {
         return R;
     }
     return nullptr;
-  case 'A': {
-    Node *T = getDerived().parseType();
-    if (T == nullptr)
-      return nullptr;
-    // FIXME: We need to include the string contents in the mangling.
-    if (consumeIf('E'))
-      return make<StringLiteral>(T);
-    return nullptr;
-  }
-  case 'D':
-    if (consumeIf("DnE"))
-      return make<NameType>("nullptr");
-    return nullptr;
   case 'T':
     // Invalid mangled name per
     //   http://sourcerytools.com/pipermail/cxx-abi-dev/2011-August/002422.html
     return nullptr;
-  case 'U': {
-    // FIXME: Should we support LUb... for block literals?
-    if (look(1) != 'l')
-      return nullptr;
-    Node *T = parseUnnamedTypeName(nullptr);
-    if (!T || !consumeIf('E'))
-      return nullptr;
-    return make<LambdaExpr>(T);
-  }
   default: {
     // might be named type
     Node *T = getDerived().parseType();
     if (T == nullptr)
       return nullptr;
     StringView N = parseNumber();
-    if (N.empty())
-      return nullptr;
-    if (!consumeIf('E'))
-      return nullptr;
-    return make<IntegerCastExpr>(T, N);
+    if (!N.empty()) {
+      if (!consumeIf('E'))
+        return nullptr;
+      return make<IntegerCastExpr>(T, N);
+    }
+    if (consumeIf('E'))
+      return T;
+    return nullptr;
   }
   }
 }
@@ -4907,21 +4638,6 @@ Node *AbstractManglingParser<Derived, Alloc>::parseExpr() {
   case '9':
     return getDerived().parseUnresolvedName();
   }
-
-  if (consumeIf("u8__uuidoft")) {
-    Node *Ty = getDerived().parseType();
-    if (!Ty)
-      return nullptr;
-    return make<UUIDOfExpr>(Ty);
-  }
-
-  if (consumeIf("u8__uuidofz")) {
-    Node *Ex = getDerived().parseExpr();
-    if (!Ex)
-      return nullptr;
-    return make<UUIDOfExpr>(Ex);
-  }
-
   return nullptr;
 }
 
@@ -5300,21 +5016,10 @@ Node *AbstractManglingParser<Derived, Alloc>::parseSubstitution() {
 
 // <template-param> ::= T_    # first template parameter
 //                  ::= T <parameter-2 non-negative number> _
-//                  ::= TL <level-1> __
-//                  ::= TL <level-1> _ <parameter-2 non-negative number> _
 template <typename Derived, typename Alloc>
 Node *AbstractManglingParser<Derived, Alloc>::parseTemplateParam() {
   if (!consumeIf('T'))
     return nullptr;
-
-  size_t Level = 0;
-  if (consumeIf('L')) {
-    if (parsePositiveInteger(&Level))
-      return nullptr;
-    ++Level;
-    if (!consumeIf('_'))
-      return nullptr;
-  }
 
   size_t Index = 0;
   if (!consumeIf('_')) {
@@ -5325,11 +5030,15 @@ Node *AbstractManglingParser<Derived, Alloc>::parseTemplateParam() {
       return nullptr;
   }
 
+  // Itanium ABI 5.1.8: In a generic lambda, uses of auto in the parameter list
+  // are mangled as the corresponding artificial template type parameter.
+  if (ParsingLambdaParams)
+    return make<NameType>("auto");
+
   // If we're in a context where this <template-param> refers to a
   // <template-arg> further ahead in the mangled name (currently just conversion
   // operator types), then we should only look it up in the right context.
-  // This can only happen at the outermost level.
-  if (PermitForwardTemplateReferences && Level == 0) {
+  if (PermitForwardTemplateReferences) {
     Node *ForwardRef = make<ForwardTemplateReference>(Index);
     if (!ForwardRef)
       return nullptr;
@@ -5339,78 +5048,9 @@ Node *AbstractManglingParser<Derived, Alloc>::parseTemplateParam() {
     return ForwardRef;
   }
 
-  if (Level >= TemplateParams.size() || !TemplateParams[Level] ||
-      Index >= TemplateParams[Level]->size()) {
-    // Itanium ABI 5.1.8: In a generic lambda, uses of auto in the parameter
-    // list are mangled as the corresponding artificial template type parameter.
-    if (ParsingLambdaParamsAtLevel == Level && Level <= TemplateParams.size()) {
-      // This will be popped by the ScopedTemplateParamList in
-      // parseUnnamedTypeName.
-      if (Level == TemplateParams.size())
-        TemplateParams.push_back(nullptr);
-      return make<NameType>("auto");
-    }
-
+  if (Index >= TemplateParams.size())
     return nullptr;
-  }
-
-  return (*TemplateParams[Level])[Index];
-}
-
-// <template-param-decl> ::= Ty                          # type parameter
-//                       ::= Tn <type>                   # non-type parameter
-//                       ::= Tt <template-param-decl>* E # template parameter
-//                       ::= Tp <template-param-decl>    # parameter pack
-template <typename Derived, typename Alloc>
-Node *AbstractManglingParser<Derived, Alloc>::parseTemplateParamDecl() {
-  auto InventTemplateParamName = [&](TemplateParamKind Kind) {
-    unsigned Index = NumSyntheticTemplateParameters[(int)Kind]++;
-    Node *N = make<SyntheticTemplateParamName>(Kind, Index);
-    if (N) TemplateParams.back()->push_back(N);
-    return N;
-  };
-
-  if (consumeIf("Ty")) {
-    Node *Name = InventTemplateParamName(TemplateParamKind::Type);
-    if (!Name)
-      return nullptr;
-    return make<TypeTemplateParamDecl>(Name);
-  }
-
-  if (consumeIf("Tn")) {
-    Node *Name = InventTemplateParamName(TemplateParamKind::NonType);
-    if (!Name)
-      return nullptr;
-    Node *Type = parseType();
-    if (!Type)
-      return nullptr;
-    return make<NonTypeTemplateParamDecl>(Name, Type);
-  }
-
-  if (consumeIf("Tt")) {
-    Node *Name = InventTemplateParamName(TemplateParamKind::Template);
-    if (!Name)
-      return nullptr;
-    size_t ParamsBegin = Names.size();
-    ScopedTemplateParamList TemplateTemplateParamParams(this);
-    while (!consumeIf("E")) {
-      Node *P = parseTemplateParamDecl();
-      if (!P)
-        return nullptr;
-      Names.push_back(P);
-    }
-    NodeArray Params = popTrailingNodeArray(ParamsBegin);
-    return make<TemplateTemplateParamDecl>(Name, Params);
-  }
-
-  if (consumeIf("Tp")) {
-    Node *P = parseTemplateParamDecl();
-    if (!P)
-      return nullptr;
-    return make<TemplateParamPackDecl>(P);
-  }
-
-  return nullptr;
+  return TemplateParams[Index];
 }
 
 // <template-arg> ::= <type>                    # type or template
@@ -5467,11 +5107,8 @@ AbstractManglingParser<Derived, Alloc>::parseTemplateArgs(bool TagTemplates) {
 
   // <template-params> refer to the innermost <template-args>. Clear out any
   // outer args that we may have inserted into TemplateParams.
-  if (TagTemplates) {
+  if (TagTemplates)
     TemplateParams.clear();
-    TemplateParams.push_back(&OuterTemplateParams);
-    OuterTemplateParams.clear();
-  }
 
   size_t ArgsBegin = Names.size();
   while (!consumeIf('E')) {
@@ -5489,7 +5126,7 @@ AbstractManglingParser<Derived, Alloc>::parseTemplateArgs(bool TagTemplates) {
         if (!TableEntry)
           return nullptr;
       }
-      TemplateParams.back()->push_back(TableEntry);
+      TemplateParams.push_back(TableEntry);
     } else {
       Node *Arg = getDerived().parseTemplateArg();
       if (Arg == nullptr)
@@ -5507,7 +5144,7 @@ AbstractManglingParser<Derived, Alloc>::parseTemplateArgs(bool TagTemplates) {
 // extension      ::= ___Z <encoding> _block_invoke_<decimal-digit>+
 template <typename Derived, typename Alloc>
 Node *AbstractManglingParser<Derived, Alloc>::parse() {
-  if (consumeIf("_Z") || consumeIf("__Z")) {
+  if (consumeIf("_Z")) {
     Node *Encoding = getDerived().parseEncoding();
     if (Encoding == nullptr)
       return nullptr;
@@ -5520,7 +5157,7 @@ Node *AbstractManglingParser<Derived, Alloc>::parse() {
     return Encoding;
   }
 
-  if (consumeIf("___Z") || consumeIf("____Z")) {
+  if (consumeIf("___Z")) {
     Node *Encoding = getDerived().parseEncoding();
     if (Encoding == nullptr || !consumeIf("_block_invoke"))
       return nullptr;
@@ -5546,6 +5183,7 @@ struct ManglingParser : AbstractManglingParser<ManglingParser<Alloc>, Alloc> {
                                Alloc>::AbstractManglingParser;
 };
 
-DEMANGLE_NAMESPACE_END
+}  // namespace itanium_demangle
+}  // namespace
 
-#endif // DEMANGLE_ITANIUMDEMANGLE_H
+#endif // LIBCXX_DEMANGLE_ITANIUMDEMANGLE_H
