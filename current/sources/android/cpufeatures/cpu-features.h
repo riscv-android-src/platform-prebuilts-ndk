@@ -44,7 +44,7 @@ typedef enum {
     ANDROID_CPU_FAMILY_ARM64,
     ANDROID_CPU_FAMILY_X86_64,
     ANDROID_CPU_FAMILY_MIPS64,
-
+    ANDROID_CPU_FAMILY_RISCV64,
     ANDROID_CPU_FAMILY_MAX  /* do not remove */
 
 } AndroidCpuFamily;
@@ -286,6 +286,15 @@ enum {
     ANDROID_CPU_MIPS_FEATURE_MSA   = (1 << 1),
 };
 
+enum {
+    ANDROID_CPU_RISCV_FEATURE_ISA_I   = (1 << ('I' - 'A')),
+    ANDROID_CPU_RISCV_FEATURE_ISA_M   = (1 << ('M' - 'A')),
+    ANDROID_CPU_RISCV_FEATURE_ISA_A   = (1 << ('A' - 'A')),
+    ANDROID_CPU_RISCV_FEATURE_ISA_F   = (1 << ('F' - 'A')),
+    ANDROID_CPU_RISCV_FEATURE_ISA_D   = (1 << ('D' - 'A')),
+    ANDROID_CPU_RISCV_FEATURE_ISA_C   = (1 << ('C' - 'A')),
+    ANDROID_CPU_RISCV_FEATURE_ISA_V   = (1 << ('V' - 'A')),
+};
 
 /* Return the number of CPU cores detected on this device. */
 extern int android_getCpuCount(void);

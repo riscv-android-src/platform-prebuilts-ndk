@@ -497,7 +497,18 @@ cpulist_read_from(CpuList* list, const char* filename)
 #define HWCAP_MIPS_MSA          (1 << 1)
 #endif
 
-#if defined(__arm__) || defined(__aarch64__) || defined(__mips__)
+#if defined(__riscv)
+// see <uapi/asm/hwcap.h> kernel header
+#define HWCAP_RISCV_ISA_I       (1 << ('I' - 'A'))
+#define HWCAP_RISCV_ISA_M       (1 << ('M' - 'A'))
+#define HWCAP_RISCV_ISA_A       (1 << ('A' - 'A'))
+#define HWCAP_RISCV_ISA_F       (1 << ('F' - 'A'))
+#define HWCAP_RISCV_ISA_D       (1 << ('D' - 'A'))
+#define HWCAP_RISCV_ISA_C       (1 << ('C' - 'A'))
+#define HWCAP_RISCV_ISA_V       (1 << ('V' - 'A'))
+#endif
+
+#if defined(__arm__) || defined(__aarch64__) || defined(__mips__) || defined(__riscv)
 
 #define AT_HWCAP 16
 #define AT_HWCAP2 26
@@ -668,6 +679,8 @@ android_cpuInitFamily(void)
     g_cpuFamily = ANDROID_CPU_FAMILY_ARM64;
 #elif defined(__x86_64__)
     g_cpuFamily = ANDROID_CPU_FAMILY_X86_64;
+#elif defined(__riscv)
+    g_cpuFamily = ANDROID_CPU_FAMILY_RISCV64;
 #else
     g_cpuFamily = ANDROID_CPU_FAMILY_UNKNOWN;
 #endif
@@ -1060,6 +1073,36 @@ android_cpuInit(void)
     }
 #endif /* __mips__ */
 
+#if defined( __riscv)
+    {   /* RISCV64 */
+        /* Extract the list of CPU features from ELF hwcaps */
+        uint32_t hwcaps = 0;
+        hwcaps = get_elf_hwcap_from_getauxval(AT_HWCAP);
+        if (hwcaps != 0) {
+            int has_isa_i    = (hwcaps & HWCAP_RISCV_ISA_I);
+            int has_isa_m    = (hwcaps & HWCAP_RISCV_ISA_M);
+            int has_isa_a    = (hwcaps & HWCAP_RISCV_ISA_A);
+            int has_isa_f    = (hwcaps & HWCAP_RISCV_ISA_F);
+            int has_isa_d    = (hwcaps & HWCAP_RISCV_ISA_D);
+            int has_isa_c    = (hwcaps & HWCAP_RISCV_ISA_C);
+            int has_isa_v    = (hwcaps & HWCAP_RISCV_ISA_V);
+            if (has_isa_i)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_I;
+            if (has_isa_m)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_M;
+            if (has_isa_a)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_A;
+            if (has_isa_f)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_F;
+            if (has_isa_d)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_D;
+            if (has_isa_c)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_C;
+            if (has_isa_v)
+                g_cpuFeatures |= ANDROID_CPU_RISCV_FEATURE_ISA_V;
+        }
+    }
+#endif /* __riscv*/
     free(cpuinfo);
 }
 
